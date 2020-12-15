@@ -1,0 +1,16 @@
+{
+  "domain": "litterrobot",
+  "name": "Litter-Robot Connect",
+  "config_flow": true,
+  "documentation": "https://github.com/natekspencer/hacs-litterrobot",
+  "requirements": [
+    "pylitterbot==0.1.0"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@natekspencer"
+  ]
+}

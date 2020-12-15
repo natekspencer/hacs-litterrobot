@@ -1,0 +1,10 @@
+{
+  "name": "Litter-Robot Connect",
+  "render_readme": true,
+  "domains": [
+    "sensor",
+    "switch",
+    "vacuum"
+  ],
+  "iot_class": "Cloud Polling"
+}
