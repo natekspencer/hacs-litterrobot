@@ -1,5 +1,8 @@
 """Support for Litter-Robot Connected Cleaner."""
-from custom_components.litterrobot import switch
+import datetime
+from typing import Optional
+
+import homeassistant.util.dt as dt_util
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -89,7 +92,17 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
         await self.perform_action_and_refresh(self.robot.start_cleaning)
 
     async def async_send_command(self, command, params=None, **kwargs):
-        """Send command."""
+        """Send command.
+
+        Available commands:
+          - reset_waste_drawer
+            * params: none
+          - set_sleep_mode
+            * params:
+              - enabled: bool
+              - sleep_time: str (optional)
+
+        """
         if command == "reset_waste_drawer":
             # Normally we need to request a refresh of data after a command is sent.
             # However, the API for resetting the waste drawer returns a refreshed
@@ -97,5 +110,25 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
             # state of devices associated with this robot.
             self.robot.reset_waste_drawer()
             self.hub.coordinator.async_set_updated_data(True)
+        elif command == "set_sleep_mode":
+            await self.perform_action_and_refresh(
+                self.robot.set_sleep_mode,
+                params.get("enabled"),
+                self.parse_time_at_default_timezone(params.get("sleep_time")),
+            )
         else:
             raise NotImplementedError()
+
+    @staticmethod
+    def parse_time_at_default_timezone(time_str: str) -> Optional[datetime.time]:
+        time = dt_util.parse_time(time_str)
+        return (
+            None
+            if time is None
+            else datetime.time(
+                hour=time.hour,
+                minute=time.minute,
+                second=time.second,
+                tzinfo=dt_util.DEFAULT_TIME_ZONE,
+            )
+        )
