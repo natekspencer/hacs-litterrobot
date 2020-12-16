@@ -2,7 +2,6 @@
 from datetime import timedelta
 
 from homeassistant.helpers.entity import ToggleEntity
-from pylitterbot import Robot
 
 from . import LitterRobotEntity
 from .const import _LOGGER, LITTERROBOT_DOMAIN

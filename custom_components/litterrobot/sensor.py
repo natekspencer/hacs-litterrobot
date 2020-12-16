@@ -68,3 +68,14 @@ class LitterRobotSensor(LitterRobotEntity, Entity):
                 return "mdi:gauge"
             else:
                 return "mdi:gauge-full"
+
+    @property
+    def device_state_attributes(self):
+        """Return device specific state attributes."""
+        if self.type == WASTE_DRAWER:
+            return {
+                "cycle_count": self.robot.cycle_count,
+                "cycle_capacity": self.robot.cycle_capacity,
+                "cycles_after_drawer_full": self.robot.cycles_after_drawer_full,
+            }
+        return None

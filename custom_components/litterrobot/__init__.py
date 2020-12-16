@@ -13,7 +13,6 @@ from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
-from homeassistant.setup import async_setup_component
 from pylitterbot import Account
 from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginException
 

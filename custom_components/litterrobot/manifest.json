@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://github.com/natekspencer/hacs-litterrobot",
   "requirements": [
-    "pylitterbot==0.1.0"
+    "pylitterbot==0.1.1"
   ],
   "ssdp": [],
   "zeroconf": [],

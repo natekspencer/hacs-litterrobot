@@ -2,9 +2,8 @@
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
-from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_AUTHENTICATION, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import callback
+from homeassistant import config_entries
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from pylitterbot import Account
 from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginException
 
