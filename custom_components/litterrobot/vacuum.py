@@ -1,8 +1,4 @@
-"""Support for Litter-Robot Connected Cleaner."""
-import datetime
-from typing import Optional
-
-import homeassistant.util.dt as dt_util
+"""Support for Litter-Robot "Vacuum"."""
 from homeassistant.components.vacuum import (
     STATE_CLEANING,
     STATE_DOCKED,
@@ -47,7 +43,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 
 class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
-    """Litter-Robot Connect cleaner."""
+    """Litter-Robot Cleaner."""
 
     @property
     def supported_features(self):
@@ -123,19 +119,6 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
     def device_state_attributes(self):
         """Return device specific state attributes."""
         return {
-            "clean_cycle_wait_time_minutes": self.robot.clean_cycle_wait_time_minutes
+            "clean_cycle_wait_time_minutes": self.robot.clean_cycle_wait_time_minutes,
+            "is_sleeping": self.robot.is_sleeping,
         }
-
-    @staticmethod
-    def parse_time_at_default_timezone(time_str: str) -> Optional[datetime.time]:
-        time = dt_util.parse_time(time_str)
-        return (
-            None
-            if time is None
-            else datetime.time(
-                hour=time.hour,
-                minute=time.minute,
-                second=time.second,
-                tzinfo=dt_util.DEFAULT_TIME_ZONE,
-            )
-        )

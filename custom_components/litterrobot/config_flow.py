@@ -1,6 +1,4 @@
-"""Config flow for Litter-Robot Connect integration."""
-from typing import Any, Dict, Optional
-
+"""Config flow for Litter-Robot integration."""
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -10,10 +8,8 @@ from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginExcepti
 from .const import _LOGGER, LITTERROBOT_DOMAIN
 
 
-class LitterRobotConnectFlowHandler(
-    config_entries.ConfigFlow, domain=LITTERROBOT_DOMAIN
-):
-    """Handle a Litter-Robot Connect config flow."""
+class LitterRobotFlowHandler(config_entries.ConfigFlow, domain=LITTERROBOT_DOMAIN):
+    """Handle a Litter-Robot config flow."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL

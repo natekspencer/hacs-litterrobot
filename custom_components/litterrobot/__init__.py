@@ -1,9 +1,11 @@
-"""The Litter-Robot Connect integration."""
+"""The Litter-Robot integration."""
 import asyncio
+import datetime
 from datetime import timedelta
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import homeassistant.helpers.config_validation as cv
+import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -32,7 +34,7 @@ CONFIG_SCHEMA = vol.Schema(
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Setup the Litter Robot Connect component."""
+    """Setup the Litter Robot component."""
     hass.data[LITTERROBOT_DOMAIN] = {}
 
     if LITTERROBOT_DOMAIN not in config:
@@ -49,6 +51,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up config entry."""
     hub = LitterRobotHub(hass, entry.data)
+
     await hass.async_add_executor_job(hub.login)
     if not hub.logged_in:
         _LOGGER.debug("Failed to login to Litter-Robot API")
@@ -74,6 +77,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
             ]
         )
     )
+
+    hass.data[LITTERROBOT_DOMAIN][entry.entry_id].unsub_listener()
+
     if unload_ok:
         hass.data[LITTERROBOT_DOMAIN].pop(entry.entry_id)
 
@@ -165,3 +171,17 @@ class LitterRobotEntity(CoordinatorEntity):
         action(*args)
         await asyncio.sleep(REFRESH_WAIT_TIME)
         await self.hub.coordinator.async_refresh()
+
+    @staticmethod
+    def parse_time_at_default_timezone(time_str: str) -> Optional[datetime.time]:
+        time = dt_util.parse_time(time_str)
+        return (
+            None
+            if time is None
+            else datetime.time(
+                hour=time.hour,
+                minute=time.minute,
+                second=time.second,
+                tzinfo=dt_util.DEFAULT_TIME_ZONE,
+            )
+        )

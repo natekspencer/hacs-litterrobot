@@ -1,10 +1,11 @@
 {
   "domain": "litterrobot",
-  "name": "Litter-Robot Connect",
+  "name": "Litter-Robot",
   "config_flow": true,
   "documentation": "https://github.com/natekspencer/hacs-litterrobot",
+  "issue_tracker": "https://github.com/natekspencer/hacs-litterrobot/issues",
   "requirements": [
-    "pylitterbot==0.1.1"
+    "pylitterbot==0.1.2"
   ],
   "ssdp": [],
   "zeroconf": [],

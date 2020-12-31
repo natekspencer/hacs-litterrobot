@@ -1,4 +1,4 @@
-"""Constants for the Litter-Robot Connect integration."""
+"""Constants for the Litter-Robot integration."""
 import logging
 
 _LOGGER = logging.getLogger(__name__)
