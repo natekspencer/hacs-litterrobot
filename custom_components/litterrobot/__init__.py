@@ -78,8 +78,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
     )
 
-    hass.data[LITTERROBOT_DOMAIN][entry.entry_id].unsub_listener()
-
     if unload_ok:
         hass.data[LITTERROBOT_DOMAIN].pop(entry.entry_id)
 

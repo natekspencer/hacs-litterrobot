@@ -24,7 +24,9 @@ class LitterRobotFlowHandler(config_entries.ConfigFlow, domain=LITTERROBOT_DOMAI
         if user_input is not None:
             try:
                 _LOGGER.debug("Attempting to login to Litter-Robot API.")
-                Account(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+                await self.hass.async_add_executor_job(
+                    Account, user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
+                )
                 _LOGGER.debug("Successfully logged in.")
                 return self.async_create_entry(
                     title=user_input[CONF_USERNAME], data=user_input
