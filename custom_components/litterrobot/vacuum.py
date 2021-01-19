@@ -121,4 +121,6 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
         return {
             "clean_cycle_wait_time_minutes": self.robot.clean_cycle_wait_time_minutes,
             "is_sleeping": self.robot.is_sleeping,
+            "power_status": self.robot.power_status,
+            "last_seen": self.robot.last_seen,
         }

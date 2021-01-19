@@ -34,7 +34,7 @@ CONFIG_SCHEMA = vol.Schema(
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Setup the Litter Robot component."""
+    """Setup the Litter-Robot component."""
     hass.data[LITTERROBOT_DOMAIN] = {}
 
     if LITTERROBOT_DOMAIN not in config:
