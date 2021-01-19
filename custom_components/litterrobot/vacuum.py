@@ -11,6 +11,7 @@ from homeassistant.components.vacuum import (
     SUPPORT_TURN_ON,
     VacuumEntity,
 )
+from homeassistant.const import STATE_OFF
 from pylitterbot import Robot
 
 from . import LitterRobotEntity
@@ -61,6 +62,7 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
             Robot.UnitStatus.DF1: STATE_DOCKED,
             Robot.UnitStatus.DF2: STATE_DOCKED,
             Robot.UnitStatus.RDY: STATE_DOCKED,
+            Robot.UnitStatus.OFF: STATE_OFF,
         }
 
         return switcher.get(self.robot.unit_status, STATE_ERROR)

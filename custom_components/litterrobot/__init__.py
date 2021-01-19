@@ -167,7 +167,7 @@ class LitterRobotEntity(CoordinatorEntity):
 
     async def perform_action_and_refresh(self, action, *args):
         """Performs an action and initiates a refresh of the robot data after a few seconds."""
-        action(*args)
+        await self.hass.async_add_executor_job(action, *args)
         await asyncio.sleep(REFRESH_WAIT_TIME)
         await self.hub.coordinator.async_refresh()
 
