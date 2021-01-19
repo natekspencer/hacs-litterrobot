@@ -1,4 +1,4 @@
-![](https://brands.home-assistant.io/_/litterrobot/icon.png =100x)
+![](https://brands.home-assistant.io/_/litterrobot/icon.png)
 # Litter-Robot for Home Assistant
 Home Assistant integration for a Litter-Robot Connect self-cleaning litter box.
 
