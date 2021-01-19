@@ -98,7 +98,7 @@ class LitterRobotHub:
 
         async def async_update_data():
             """Update all device states from the Litter-Robot API."""
-            self.account.refresh_robots()
+            result = await hass.async_add_executor_job(self.account.refresh_robots)
             return True
 
         self.coordinator = DataUpdateCoordinator(
@@ -116,6 +116,7 @@ class LitterRobotHub:
             self.account = Account(
                 self.config[CONF_USERNAME], self.config[CONF_PASSWORD]
             )
+            self.account.refresh_robots()
         except LitterRobotException as ex:
             if isinstance(ex, LitterRobotLoginException):
                 _LOGGER.error("Invalid credentials")
