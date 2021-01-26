@@ -96,7 +96,7 @@ class LitterRobotHub:
 
         async def async_update_data():
             """Update all device states from the Litter-Robot API."""
-            result = await hass.async_add_executor_job(self.account.refresh_robots)
+            await hass.async_add_executor_job(self.account.refresh_robots)
             return True
 
         self.coordinator = DataUpdateCoordinator(

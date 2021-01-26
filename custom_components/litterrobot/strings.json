@@ -1,6 +1,5 @@
 {
   "config": {
-    "title": "Litter-Robot",
     "step": {
       "user": {
         "title": "Authenticate with the Litter-Robot API",
