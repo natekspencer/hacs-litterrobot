@@ -24,15 +24,32 @@ There are two main ways to install this custom component within your Home Assist
 While the manual installation above seems like less steps, it's important to note that you will not be able to see updates to this custom component unless you are subscribed to the watch list. You will then have to repeat each step in the process. By using HACS, you'll be able to see that an update is available and easily update the custom component.
 
 # Configuration
-
 There is a config flow for this Litter-Robot integration. After installing the custom component:
 1. Go to **Configuration**->**Integrations**
 2. Click **+ ADD INTEGRATION** to setup a new integration
 3. Search for **Litter-Robot** and click on it
+   ![](images/search.png)
 4. You will be guided through the rest of the setup process via the config flow
 
+# Entities
+The following entities are created for this component:
+
+Entity        | Domain   | Attributes
+------------- | -------- | ----------
+Litter Box    | `vacuum` | clean cycle wait time minutes<br/>is sleeping<br/>power status<br/>last seen
+Night Light   | `switch` |
+Panel Lockout | `switch` |
+Sleep Mode    | `switch` | start time<br/>end time
+Waste Drawer  | `sensor` | cycle count<br/>cycle capacity<br/>cycles after drawer full
+
+All of the entities above are grouped together and identified by a single device as shown in the picture below:
+
+![](images/device.png)
+
 # Services
-Replace `<entity_id>` in any of the below samples with the appropriate value of your Litter-Robot vacuum entity.
+In addition to the entities that are created above, some services that are built-in to the vacuum domain are utilized for additional functionality that is available in the Litter-Robot companion app.
+
+Replace `<entity_id>` in any of the below snippets with the appropriate value of your Litter-Robot vacuum entity.
 
 ## vacuum.turn_off
 Supports turning off your Litter-Robot. If the unit is currently cycling, it will interrupt the cycle and stop the bonnet where it is at the time the command is received.
@@ -87,6 +104,11 @@ data:
     enabled: true
     sleep_time: '22:30:00'
 ```
+
+---
+
+## TODO
+* Add ability to change clean cycle wait time
 
 ---
 
