@@ -1,6 +1,7 @@
 {
   "domain": "litterrobot",
   "name": "Litter-Robot",
+  "version": "2021.1.1",
   "config_flow": true,
   "documentation": "https://github.com/natekspencer/hacs-litterrobot",
   "issue_tracker": "https://github.com/natekspencer/hacs-litterrobot/issues",
