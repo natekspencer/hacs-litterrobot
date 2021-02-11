@@ -3,7 +3,7 @@ from homeassistant.const import DEVICE_CLASS_TIMESTAMP, PERCENTAGE
 from homeassistant.helpers.entity import Entity
 
 from . import LitterRobotEntity
-from .const import _LOGGER, LITTERROBOT_DOMAIN
+from .const import DOMAIN
 
 WASTE_DRAWER = "Waste Drawer"
 
@@ -11,7 +11,7 @@ WASTE_DRAWER = "Waste Drawer"
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up Litter-Robot sensors using config entry."""
     entities = []
-    hub = hass.data[LITTERROBOT_DOMAIN][config_entry.entry_id]
+    hub = hass.data[DOMAIN][config_entry.entry_id]
 
     for robot in hub.account.robots:
         entities.append(LitterRobotSensor(robot, WASTE_DRAWER, hub))
@@ -19,7 +19,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     if not entities:
         return
 
-    _LOGGER.debug(f"Adding robot sensors {entities}")
     async_add_entities(entities, True)
 
 

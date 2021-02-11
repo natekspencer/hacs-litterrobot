@@ -1,14 +1,18 @@
 """Config flow for Litter-Robot integration."""
+import logging
+
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from pylitterbot import Account
 from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginException
 
-from .const import _LOGGER, LITTERROBOT_DOMAIN
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
-class LitterRobotFlowHandler(config_entries.ConfigFlow, domain=LITTERROBOT_DOMAIN):
+class LitterRobotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a Litter-Robot config flow."""
 
     VERSION = 1
@@ -24,8 +28,10 @@ class LitterRobotFlowHandler(config_entries.ConfigFlow, domain=LITTERROBOT_DOMAI
         if user_input is not None:
             try:
                 _LOGGER.debug("Attempting to login to Litter-Robot API.")
-                await self.hass.async_add_executor_job(
-                    Account, user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
+                account = Account()
+                await account.connect(
+                    username=user_input[CONF_USERNAME],
+                    password=user_input[CONF_PASSWORD],
                 )
                 _LOGGER.debug("Successfully logged in.")
                 return self.async_create_entry(

@@ -1,6 +1,7 @@
 """The Litter-Robot integration."""
 import asyncio
 import datetime
+import logging
 from datetime import timedelta
 from typing import Any, Dict, Optional
 
@@ -18,11 +19,12 @@ from homeassistant.helpers.update_coordinator import (
 from pylitterbot import Account
 from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginException
 
-from .const import _LOGGER, LITTERROBOT_DOMAIN, LITTERROBOT_PLATFORMS, REFRESH_WAIT_TIME
+from .const import DOMAIN, REFRESH_WAIT_TIME
 
+PLATFORMS = ["sensor", "switch", "vacuum"]
 CONFIG_SCHEMA = vol.Schema(
     {
-        LITTERROBOT_DOMAIN: vol.Schema(
+        DOMAIN: vol.Schema(
             {
                 vol.Required(CONF_USERNAME): cv.string,
                 vol.Required(CONF_PASSWORD): cv.string,
@@ -31,19 +33,20 @@ CONFIG_SCHEMA = vol.Schema(
     },
     extra=vol.ALLOW_EXTRA,
 )
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Setup the Litter-Robot component."""
-    hass.data[LITTERROBOT_DOMAIN] = {}
+    hass.data[DOMAIN] = {}
 
-    if LITTERROBOT_DOMAIN not in config:
+    if DOMAIN not in config:
         return True
 
-    for entry in config[LITTERROBOT_DOMAIN]:
+    for entry in config[DOMAIN]:
         hass.async_create_task(
             hass.config_entries.flow.async_init(
-                LITTERROBOT_DOMAIN, context={"source": SOURCE_IMPORT}, data=entry
+                DOMAIN, context={"source": SOURCE_IMPORT}, data=entry
             )
         )
 
@@ -52,14 +55,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up config entry."""
     hub = LitterRobotHub(hass, entry.data)
 
-    await hass.async_add_executor_job(hub.login)
+    await hub.login()
     if not hub.logged_in:
         _LOGGER.debug("Failed to login to Litter-Robot API")
         return False
 
-    hass.data[LITTERROBOT_DOMAIN][entry.entry_id] = hub
+    hass.data[DOMAIN][entry.entry_id] = hub
 
-    for component in LITTERROBOT_PLATFORMS:
+    for component in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)
         )
@@ -73,13 +76,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         await asyncio.gather(
             *[
                 hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in LITTERROBOT_PLATFORMS
+                for component in PLATFORMS
             ]
         )
     )
 
     if unload_ok:
-        hass.data[LITTERROBOT_DOMAIN].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
 
@@ -96,25 +99,27 @@ class LitterRobotHub:
 
         async def async_update_data():
             """Update all device states from the Litter-Robot API."""
-            await hass.async_add_executor_job(self.account.refresh_robots)
+            await self.account.refresh_robots()
             return True
 
         self.coordinator = DataUpdateCoordinator(
             hass,
             _LOGGER,
-            name=LITTERROBOT_DOMAIN,
+            name=DOMAIN,
             update_method=async_update_data,
             update_interval=timedelta(minutes=1),
         )
 
-    def login(self):
+    async def login(self):
         """Login to Litter-Robot."""
         _LOGGER.debug("Trying to connect to Litter-Robot API")
         try:
-            self.account = Account(
-                self.config[CONF_USERNAME], self.config[CONF_PASSWORD]
+            self.account = Account()
+            await self.account.connect(
+                username=self.config[CONF_USERNAME],
+                password=self.config[CONF_PASSWORD],
+                load_robots=True,
             )
-            self.account.refresh_robots()
         except LitterRobotException as ex:
             if isinstance(ex, LitterRobotLoginException):
                 _LOGGER.error("Invalid credentials")
@@ -157,7 +162,7 @@ class LitterRobotEntity(CoordinatorEntity):
     def device_info(self) -> Dict[str, Any]:
         """Return the device information for a Litter-Robot."""
         return {
-            "identifiers": {(LITTERROBOT_DOMAIN, self.robot.serial)},
+            "identifiers": {(DOMAIN, self.robot.serial)},
             "name": self.robot.name,
             "manufacturer": "Litter-Robot",
             "model": "Litter-Robot 3 Connect"
@@ -167,7 +172,7 @@ class LitterRobotEntity(CoordinatorEntity):
 
     async def perform_action_and_refresh(self, action, *args):
         """Performs an action and initiates a refresh of the robot data after a few seconds."""
-        await self.hass.async_add_executor_job(action, *args)
+        await action(*args)
         await asyncio.sleep(REFRESH_WAIT_TIME)
         await self.hub.coordinator.async_refresh()
 

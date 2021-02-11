@@ -3,7 +3,7 @@ import homeassistant.util.dt as dt_util
 from homeassistant.helpers.entity import ToggleEntity
 
 from . import LitterRobotEntity
-from .const import _LOGGER, LITTERROBOT_DOMAIN
+from .const import DOMAIN
 
 NIGHT_LIGHT = "Night Light"
 PANEL_LOCKOUT = "Panel Lockout"
@@ -13,7 +13,7 @@ SLEEP_MODE = "Sleep Mode"
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up Litter-Robot switches using config entry."""
     entities = []
-    hub = hass.data[LITTERROBOT_DOMAIN][config_entry.entry_id]
+    hub = hass.data[DOMAIN][config_entry.entry_id]
 
     for robot in hub.account.robots:
         entities.append(LitterRobotSwitch(robot, NIGHT_LIGHT, hub))
@@ -23,7 +23,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     if not entities:
         return
 
-    _LOGGER.debug(f"Adding robot switches {entities}")
     async_add_entities(entities, True)
 
 

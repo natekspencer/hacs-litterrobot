@@ -1,9 +1,4 @@
 """Constants for the Litter-Robot integration."""
-import logging
-
-_LOGGER = logging.getLogger(__name__)
-
-LITTERROBOT_DOMAIN = "litterrobot"
-LITTERROBOT_PLATFORMS = ["sensor", "switch", "vacuum"]
+DOMAIN = "litterrobot"
 
 REFRESH_WAIT_TIME = 12

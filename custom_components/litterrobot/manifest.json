@@ -1,18 +1,14 @@
 {
   "domain": "litterrobot",
   "name": "Litter-Robot",
-  "version": "2021.1.1",
+  "version": "2021.2.0",
   "config_flow": true,
   "documentation": "https://github.com/natekspencer/hacs-litterrobot",
   "issue_tracker": "https://github.com/natekspencer/hacs-litterrobot/issues",
-  "requirements": [
-    "pylitterbot==0.1.2"
-  ],
+  "requirements": ["pylitterbot==2021.2.3"],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},
   "dependencies": [],
-  "codeowners": [
-    "@natekspencer"
-  ]
+  "codeowners": ["@natekspencer"]
 }

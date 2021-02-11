@@ -15,7 +15,7 @@ from homeassistant.const import STATE_OFF
 from pylitterbot import Robot
 
 from . import LitterRobotEntity
-from .const import _LOGGER, LITTERROBOT_DOMAIN
+from .const import DOMAIN
 
 SUPPORT_LITTERROBOT = (
     SUPPORT_START
@@ -31,7 +31,7 @@ LITTER_BOX = "Litter Box"
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up Litter-Robot cleaner using config entry."""
     entities = []
-    hub = hass.data[LITTERROBOT_DOMAIN][config_entry.entry_id]
+    hub = hass.data[DOMAIN][config_entry.entry_id]
 
     for robot in hub.account.robots:
         entities.append(LitterRobotCleaner(robot, LITTER_BOX, hub))
@@ -39,7 +39,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     if not entities:
         return
 
-    _LOGGER.debug(f"Adding robot cleaner {entities}")
     async_add_entities(entities, True)
 
 
@@ -106,8 +105,8 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
             # However, the API for resetting the waste drawer returns a refreshed
             # data set for the robot. Thus, we only need to tell hass to update the
             # state of devices associated with this robot.
-            self.robot.reset_waste_drawer()
-            self.hub.coordinator.async_set_updated_data(True)
+            await self.robot.reset_waste_drawer()
+            await self.hub.coordinator.async_set_updated_data(True)
         elif command == "set_sleep_mode":
             await self.perform_action_and_refresh(
                 self.robot.set_sleep_mode,
