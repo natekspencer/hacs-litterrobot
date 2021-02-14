@@ -14,36 +14,34 @@ from homeassistant.components.vacuum import (
 from homeassistant.const import STATE_OFF
 from pylitterbot import Robot
 
-from . import LitterRobotEntity
 from .const import DOMAIN
+from .hub import LitterRobotEntity
 
 SUPPORT_LITTERROBOT = (
-    SUPPORT_START
+    SUPPORT_SEND_COMMAND
+    | SUPPORT_START
     | SUPPORT_STATE
     | SUPPORT_STATUS
     | SUPPORT_TURN_OFF
     | SUPPORT_TURN_ON
-    | SUPPORT_SEND_COMMAND
 )
-LITTER_BOX = "Litter Box"
+TYPE_LITTER_BOX = "Litter Box"
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up Litter-Robot cleaner using config entry."""
-    entities = []
     hub = hass.data[DOMAIN][config_entry.entry_id]
 
+    entities = []
     for robot in hub.account.robots:
-        entities.append(LitterRobotCleaner(robot, LITTER_BOX, hub))
+        entities.append(LitterRobotCleaner(robot, TYPE_LITTER_BOX, hub))
 
-    if not entities:
-        return
-
-    async_add_entities(entities, True)
+    if entities:
+        async_add_entities(entities, True)
 
 
 class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
-    """Litter-Robot Cleaner."""
+    """Litter-Robot "Vacuum" Cleaner."""
 
     @property
     def supported_features(self):
@@ -76,11 +74,11 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
         """Return the status of the cleaner."""
         return f"{self.robot.unit_status.value}{' (Sleeping)' if self.robot.is_sleeping else ''}"
 
-    async def async_turn_on(self):
+    async def async_turn_on(self, **kwargs):
         """Turn the cleaner on, starting a clean cycle."""
         await self.perform_action_and_refresh(self.robot.set_power_status, True)
 
-    async def async_turn_off(self):
+    async def async_turn_off(self, **kwargs):
         """Turn the unit off, stopping any cleaning in progress as is."""
         await self.perform_action_and_refresh(self.robot.set_power_status, False)
 
@@ -106,7 +104,7 @@ class LitterRobotCleaner(LitterRobotEntity, VacuumEntity):
             # data set for the robot. Thus, we only need to tell hass to update the
             # state of devices associated with this robot.
             await self.robot.reset_waste_drawer()
-            await self.hub.coordinator.async_set_updated_data(True)
+            self.hub.coordinator.async_set_updated_data(True)
         elif command == "set_sleep_mode":
             await self.perform_action_and_refresh(
                 self.robot.set_sleep_mode,

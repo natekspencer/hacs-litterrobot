@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://github.com/natekspencer/hacs-litterrobot",
   "issue_tracker": "https://github.com/natekspencer/hacs-litterrobot/issues",
-  "requirements": ["pylitterbot==2021.2.3"],
+  "requirements": ["pylitterbot==2021.2.4"],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},
