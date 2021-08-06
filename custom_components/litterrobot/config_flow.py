@@ -1,10 +1,11 @@
 """Config flow for Litter-Robot integration."""
 import logging
 
-import voluptuous as vol
-from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from pylitterbot.exceptions import LitterRobotException, LitterRobotLoginException
+import voluptuous as vol
+
+from homeassistant import config_entries
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 
 from .const import DOMAIN
 from .hub import LitterRobotHub
@@ -16,58 +17,34 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
-async def validate_input(hass: core.HomeAssistant, data: dict):
-    """Validate the user input allows us to connect.
-
-    Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
-    """
-    hub = LitterRobotHub(hass, data)
-
-    try:
-        await hub.login()
-    except LitterRobotLoginException as ex:
-        raise InvalidAuth from ex
-    except LitterRobotException as ex:
-        raise CannotConnect from ex
-
-    return {"title": data[CONF_USERNAME]}
-
-
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Litter-Robot."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
 
         if user_input is not None:
-            for entry in self._async_current_entries():
-                if entry.data[CONF_USERNAME] == user_input[CONF_USERNAME]:
-                    return self.async_abort(reason="already_configured")
+            self._async_abort_entries_match({CONF_USERNAME: user_input[CONF_USERNAME]})
 
+            hub = LitterRobotHub(self.hass, user_input)
             try:
-                info = await validate_input(self.hass, user_input)
-
-                return self.async_create_entry(title=info["title"], data=user_input)
-            except CannotConnect:
-                errors["base"] = "cannot_connect"
-            except InvalidAuth:
+                await hub.login()
+            except LitterRobotLoginException:
                 errors["base"] = "invalid_auth"
+            except LitterRobotException:
+                errors["base"] = "cannot_connect"
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
 
+            if not errors:
+                return self.async_create_entry(
+                    title=user_input[CONF_USERNAME], data=user_input
+                )
+
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
-
-
-class CannotConnect(exceptions.HomeAssistantError):
-    """Error to indicate we cannot connect."""
-
-
-class InvalidAuth(exceptions.HomeAssistantError):
-    """Error to indicate there is invalid auth."""
