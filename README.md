@@ -134,7 +134,7 @@ data:
 
 I'm not employed by Litter-Robot, and provide this custom component purely for your own enjoyment and home automation needs.
 
-If you don't already own a Litter-Robot, please consider using [my referal code](https://www.talkable.com/x/nM6obi) and get $25 off your own robot (as well as a tip to me in appreciation)!
+If you don't already own a Litter-Robot, please consider using [my referral code](https://www.talkable.com/x/j0e1SM) and get $25 off your own robot (as well as a tip to me in appreciation)!
 
 If you already own a Litter-Robot and/or want to donate to me directly, consider buying me a coffee (or beer) instead by using the link below:
 
